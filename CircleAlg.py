@@ -11,9 +11,9 @@ def getDist(carosel,PIarr,i):
 	fwd = abs(carosel.index(PIarr[i+1]) - carosel.index(PIarr[i]))
 	bwd = 10-fwd
 	if fwd > bwd:
-		return fwd
-	else:
 		return bwd
+	else:
+		return fwd
 			
 def permutation(lst):
   

@@ -1,7 +1,0 @@
-class TensionControl{
-
-public:
-  
-  TensionControl
-
-}

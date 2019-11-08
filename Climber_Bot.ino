@@ -3,6 +3,10 @@
 #include "Control_Functions.h"
 
 #define I2CADR 0x11
+#define TOFUADR 0x29
+#define TOFDADR 0x30
+#define ENPINTOFU 7
+#define ENPINTOFD 8
 #define stepPin 4
 #define dirPin 5
 
@@ -13,19 +17,16 @@ double dist =0;
 
 void setup() {
   wire.begin(I2CADR);
-  Control_Functions.setAdrs();
+  Control_Functions.setAdrs(TOFUADR,ENPINTOFU,TOFDADR,ENPINTOFD);
+  Stepper climber;
+  Stepper placer;
 }
 
 void loop() {
   Wire.onReceive(climb = true);
-  if(climb){
-    while(climb){
-      dist = getDist(direct);
-      if (dist < 5) placeStack(); 
-        
-      
-    }
-  }
+  while(climb){
+    
+  }  
 }
 
 void placeStack(){

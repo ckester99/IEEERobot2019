@@ -243,7 +243,7 @@ void loop() {
 
   dummyTime = micros();
   for (int i = 0;i<10;i++){ //turns buttons off after slow tolerance (debounce is 25ms)
-    if ( (dummyTime - onTimes[i]) > BUTTONSLOWTOLERANCE) && (onTimes[i] != 0){
+    if ( ((dummyTime - onTimes[i]) > BUTTONSLOWTOLERANCE) && (onTimes[i] != 0) ){
       *outReg[i] &= resArr[i];
       offTimes[i] = micros();
       onTimes[i] = 0;

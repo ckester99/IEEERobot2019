@@ -8,7 +8,7 @@
 #define Gpin 1
 
 Servo Xserv, Yserv, Zserv, Pserv, Gserv;
-float thetaX, thetaY, thetaZ, thetaP, thetaG; // in radians
+float thetaX, thetaY, thetaZ, thetaP, thetaG; // in radians (X is degrees)
 float Ytg, Pte, Offx, L;
 
 void attchServos(){
@@ -24,6 +24,7 @@ void target(float R, float D, float H){
   thetaZ = abs(2*atan(sqrt((-(D*D - 2*D*Offx - 2*D*Pte + H*H - 2*H*Ytg + Offx*Offx + 2*Offx*Pte + Pte*Pte + Ytg*Ytg)/(D*D - 2*D*Offx - 2*D*Pte + H*H - 2*H*Ytg - 4*L*L + Offx*Offx + 2*Offx*Pte + Pte*Pte + Ytg*Ytg)))));
   thetaY = asin(L*thetaZ/sqrt(pow(D-Pte,2)+pow(H-Ytg,2)));
   thetaP = thetaZ+thetaY;
+  Xserv.write(thetaX)
   Yserv.write(thetaY*180/M_PI);
   Zserv.write(thetaZ*180/M_PI);
   Pserv.write(thetaP*180/M_PI);

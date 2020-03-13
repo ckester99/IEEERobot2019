@@ -1,17 +1,23 @@
-#include<avr/pgmspace.h>
+#include <avr/pgmspace.h>
+#include <Servo.h>
 
 #define BUTTONFASTTOLERANCE .01*1000000//time between press of different buttons
 #define BUTTONSLOWTOLERANCE .025*1000000//button debounce time
+#define DRIVETIME 2 * 1000//time to drive up to wall in ms
+#define SERVOTRAVELTIME 2* 1000 //time for servos to deploy arms in ms
+
 
 
 unsigned long onTimes[10], offTimes[10];
-uint8_t setArr[] = {B00000100,B00001000,B00010000,B00100000,B01000000,B10000000,B00000001,B00000010,B00000100,B00001000};
-uint8_t resArr[] = {B11111011,B11110111,B11101111,B11011111,B10111111,B01111111,B11111110,B11111101,B11111011,B11110111};
+uint8_t setArr[] = {B00000100,B00001000,B00010000,B00100000,B01000000,B10000000,B00000001,B00000010,B00010000,B00100000};
+uint8_t resArr[] = {B11111011,B11110111,B11101111,B11011111,B10111111,B01111111,B11111110,B11111101,B11101111,B11011111};
 uint8_t *outReg[] = {&PORTD,&PORTD,&PORTD,&PORTD,&PORTD,&PORTD,&PORTB,&PORTB,&PORTB,&PORTB};
 unsigned long timeLastPressMicros, dummyTime;
 unsigned int currDigit = 3;
 int currIndex = 0;
 
+Servo rightServ; //from looking at front of robot
+Servo leftServ;
 
 void setup() {
   pinMode(2,OUTPUT);  //DIGIT 0
@@ -22,17 +28,40 @@ void setup() {
   pinMode(7,OUTPUT);  //DIGIT 5
   pinMode(8,OUTPUT);  //DIGIT 6
   pinMode(9,OUTPUT);  //DIGIT 7
-  pinMode(10,OUTPUT); //DIGIT 8
-  pinMode(11,OUTPUT); //DIGIT 9
+  pinMode(12,OUTPUT); //DIGIT 8
+  pinMode(13,OUTPUT); //DIGIT 9
 
+  pinMode(A0,OUTPUT); //Motors
+  pinMode(A1,OUTPUT);
+
+  rightServ.attach(11);
+  leftServ.attach(10);
+  rightServ.write(90); //vertical positions
+  delay(SERVOTRAVELTIME);
+  leftServ.write(90);
+  
+
+  digitalWrite(A0,HIGH); //drive forward
+  digitalWrite(A1,HIGH);
+  delay(DRIVETIME);
+  digitalWrite(A0,LOW);
+  digitalWrite(A1,LOW);
+
+  rightServ.write(180);
+  leftServ.write(0);
+  delay(SERVOTRAVELTIME);
+  rightServ.detach();
+  leftServ.detach();
+  
+  
   for (int i = 0;i<10;i++){
     onTimes[i] = 1;
     offTimes[i] = 1;
   }
+
   
-  Serial.begin(9600);
-  Serial.println("hello");
-  Serial.println(BUTTONSLOWTOLERANCE);
+  
+
   
 }
 
@@ -56,7 +85,8 @@ void loop(){
 }
 */
 
-void loop(){
+void loop(){ //button pushing
+  
  
   
   dummyTime = micros();
@@ -72,7 +102,6 @@ void loop(){
   for (int i =0;i<10;i++){
     dummyTime = micros();
     if (dummyTime - onTimes[i] > BUTTONSLOWTOLERANCE && onTimes[i] !=0){
-      Serial.println(dummyTime-onTimes[i]);
       onTimes[i] = 0;
       *outReg[i] &= resArr[i];
       offTimes[i] = micros();
